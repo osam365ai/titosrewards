@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tito's Rewards — Leaderboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #FF5500;
+      --dark: #111111;
+      --card: #1a1a1a;
+      --card2: #222222;
+      --border: rgba(255,255,255,0.07);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.45);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; }
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Work Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      display: flex; flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: #161616;
+      border-bottom: 2px solid rgba(255,85,0,0.3);
+      padding: 18px 40px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .flame { font-size: 42px; line-height: 1; }
+    .brand-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 42px; letter-spacing: 4px; color: var(--primary); line-height: 1;
+    }
+    .brand-sub {
+      font-size: 12px; font-weight: 600; letter-spacing: 3px;
+      color: var(--muted); text-transform: uppercase; margin-top: 2px;
+    }
+    .header-center {
+      text-align: center;
+    }
+    .header-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 32px; letter-spacing: 3px; color: var(--text);
+    }
+    .header-month {
+      font-size: 13px; font-weight: 600; color: var(--primary);
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .header-right { text-align: right; }
+    .refresh-info { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .countdown {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; color: var(--primary); letter-spacing: 2px;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1; display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px; padding: 24px 32px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ── PANEL ── */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 18px 24px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .panel-icon { font-size: 28px; }
+    .panel-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; letter-spacing: 2px;
+    }
+    .panel-subtitle { font-size: 12px; color: var(--muted); margin-top: 1px; font-weight: 500; }
+
+    /* ── RANKING LIST ── */
+    .ranking-list {
+      flex: 1; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .rank-item {
+      display: flex; align-items: center;
+      padding: 0 20px;
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+      transition: background 0.3s;
+      min-height: 0;
+    }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-item.top1 { background: rgba(255,215,0,0.05); }
+    .rank-item.top2 { background: rgba(192,192,192,0.04); }
+    .rank-item.top3 { background: rgba(205,127,50,0.04); }
+
+    .rank-pos {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 48px; width: 56px; text-align: center;
+      color: var(--muted); flex-shrink: 0; line-height: 1;
+    }
+    .rank-item.top1 .rank-pos { color: #FFD700; }
+    .rank-item.top2 .rank-pos { color: #C0C0C0; }
+    .rank-item.top3 .rank-pos { color: #CD7F32; }
+
+    .rank-medal { font-size: 28px; flex-shrink: 0; width: 36px; text-align: center; }
+
+    .rank-info { flex: 1; min-width: 0; }
+    .rank-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 30px; letter-spacing: 1px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      line-height: 1.1;
+    }
+    .rank-item.top1 .rank-name { color: #FFD700; }
+    .rank-item.top2 .rank-name { color: #C0C0C0; }
+    .rank-item.top3 .rank-name { color: #CD7F32; }
+    .rank-sucursal { font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 1px; margin-top: 1px; }
+
+    .rank-pts {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 44px; color: var(--primary);
+      letter-spacing: 1px; flex-shrink: 0; line-height: 1; text-align: right;
+    }
+    .rank-pts-label {
+      font-size: 10px; color: var(--muted); font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase; text-align: right;
+    }
+    .rank-pts-wrap { display: flex; flex-direction: column; align-items: flex-end; }
+
+    /* ── EMPTY / LOADING ── */
+    .empty-state {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 18px; gap: 10px;
+    }
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid var(--border); border-top-color: var(--primary);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: #0e0e0e; border-top: 1px solid var(--border);
+      padding: 10px 40px;
+      display: flex; align-items: center; justify-content: center;
+      gap: 40px; flex-shrink: 0;
+    }
+    .footer-stat {
+      text-align: center;
+    }
+    .footer-stat-val {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px; color: var(--primary); letter-spacing: 1px;
+    }
+    .footer-stat-label {
+      font-size: 10px; color: var(--muted); font-weight: 600;
+      letter-spacing: 1.5px; text-transform: uppercase;
+    }
+    .footer-divider {
+      width: 1px; height: 36px; background: var(--border);
+    }
+    .footer-cta {
+      text-align: center;
+    }
+    .footer-cta-main {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; color: var(--primary); letter-spacing: 2px;
+    }
+    .footer-cta-sub {
+      font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 1px;
+    }
+
+    /* ── FADE ANIMATION ── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .rank-item { animation: fadeIn 0.4s ease both; }
+    .rank-item:nth-child(1) { animation-delay: 0.05s; }
+    .rank-item:nth-child(2) { animation-delay: 0.10s; }
+    .rank-item:nth-child(3) { animation-delay: 0.15s; }
+    .rank-item:nth-child(4) { animation-delay: 0.20s; }
+    .rank-item:nth-child(5) { animation-delay: 0.25s; }
+    .rank-item:nth-child(6) { animation-delay: 0.30s; }
+    .rank-item:nth-child(7) { animation-delay: 0.35s; }
+    .rank-item:nth-child(8) { animation-delay: 0.40s; }
+    .rank-item:nth-child(9) { animation-delay: 0.45s; }
+    .rank-item:nth-child(10){ animation-delay: 0.50s; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="flame">🔥</div>
+    <div>
+      <div class="brand-name">TITO'S REWARDS</div>
+      <div class="brand-sub">Alitas Adictivas — Barrio Antiguo</div>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="header-title">🏆 LEADERBOARD DEL MES</div>
+    <div class="header-month" id="mes-label">—</div>
+  </div>
+  <div class="header-right">
+    <div class="refresh-info">Actualizando en</div>
+    <div class="countdown" id="countdown">10:00</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- RANKING GLOBAL -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-icon">🌎</div>
+      <div>
+        <div class="panel-title">Ranking Global</div>
+        <div class="panel-subtitle">Todas las sucursales · Este mes</div>
+      </div>
+    </div>
+    <div class="ranking-list" id="list-global">
+      <div class="empty-state"><div class="spinner"></div> Cargando…</div>
+    </div>
+  </div>
+
+  <!-- RANKING BARRIO -->
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-icon">📍</div>
+      <div>
+        <div class="panel-title">Ranking Barrio Antiguo</div>
+        <div class="panel-subtitle">Solo esta sucursal · Este mes</div>
+      </div>
+    </div>
+    <div class="ranking-list" id="list-barrio">
+      <div class="empty-state"><div class="spinner"></div> Cargando…</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-stat">
+    <div class="footer-stat-val" id="stat-clientes">—</div>
+    <div class="footer-stat-label">Clientes registrados</div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-stat">
+    <div class="footer-stat-val" id="stat-puntos">—</div>
+    <div class="footer-stat-label">Puntos entregados</div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-cta">
+    <div class="footer-cta-main">¿AÚN NO TIENES CUENTA?</div>
+    <div class="footer-cta-sub">Regístrate con tu cajero y empieza a ganar puntos hoy</div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-stat">
+    <div class="footer-stat-val" style="color:#FFD700;">$1 = 1 PTS</div>
+    <div class="footer-stat-label">En cada compra</div>
+  </div>
+  <div class="footer-divider"></div>
+  <div class="footer-stat">
+    <div class="footer-stat-val" style="color:#48c78e;">300 PTS</div>
+    <div class="footer-stat-label">Para tu primera bebida gratis</div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="airtable.js"></script>
+<script>
+  const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const MEDALS = ['🥇','🥈','🥉'];
+
+  // ── MES ────────────────────────────────────────────────
+  const ahora = new Date();
+  document.getElementById('mes-label').textContent =
+    `${MESES[ahora.getMonth()]} ${ahora.getFullYear()}`;
+
+  // ── RENDER ────────────────────────────────────────────
+  function renderLista(listId, records, maxItems = 10) {
+    const list = document.getElementById(listId);
+    const top = records.slice(0, maxItems);
+
+    if (top.length === 0) {
+      list.innerHTML = '<div class="empty-state">Aún no hay participantes este mes 🏆</div>';
+      return;
+    }
+
+    list.innerHTML = top.map((r, i) => {
+      const pos = i + 1;
+      const nombre = (r.fields.nombre || 'Cliente').toUpperCase();
+      const pts = puntosRankingMes(r);
+      const sucursal = r.fields.sucursal_registro || '';
+      let topClass = '';
+      if (pos === 1) topClass = 'top1';
+      else if (pos === 2) topClass = 'top2';
+      else if (pos === 3) topClass = 'top3';
+
+      return `<div class="rank-item ${topClass}">
+        <div class="rank-pos">${pos}</div>
+        <div class="rank-medal">${MEDALS[i] || ''}</div>
+        <div class="rank-info">
+          <div class="rank-name">${nombre}</div>
+          ${sucursal ? `<div class="rank-sucursal">📍 ${sucursal}</div>` : ''}
+        </div>
+        <div class="rank-pts-wrap">
+          <div class="rank-pts">${formatearPuntos(pts)}</div>
+          <div class="rank-pts-label">puntos</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── CARGAR DATOS ──────────────────────────────────────
+  async function cargar() {
+    try {
+      const [global, barrio, todos] = await Promise.all([
+        obtenerRankingGlobal(),
+        obtenerRankingBarrio(SUCURSAL_BARRIO),
+        obtenerTodosClientes(),
+      ]);
+
+      // Filtrar solo los que tienen puntos este mes
+      const globalConPuntos = global.filter(r => puntosRankingMes(r) > 0);
+      const barrioConPuntos = barrio.filter(r => puntosRankingMes(r) > 0);
+
+      renderLista('list-global', globalConPuntos);
+      renderLista('list-barrio', barrioConPuntos);
+
+      // Stats footer
+      const totalPuntos = todos.reduce((s, r) => s + (r.fields.puntos_totales || 0), 0);
+      document.getElementById('stat-clientes').textContent = todos.length.toLocaleString('es-MX');
+      document.getElementById('stat-puntos').textContent = formatearPuntos(totalPuntos);
+
+    } catch(e) {
+      console.error('Error cargando leaderboard:', e);
+    }
+  }
+
+  // ── COUNTDOWN ────────────────────────────────────────
+  const INTERVALO = 600;
+  let segundos = INTERVALO;
+
+  function tick() {
+    segundos--;
+    const m = Math.floor(segundos / 60);
+    const s = String(segundos % 60).padStart(2, '0');
+    document.getElementById('countdown').textContent = `${m}:${s}`;
+    if (segundos <= 0) {
+      segundos = INTERVALO;
+      cargar();
+    }
+  }
+
+  // ── INIT ─────────────────────────────────────────────
+  cargar();
+  setInterval(tick, 1000);
+</script>
+</body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cajero — Tito's Rewards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #FF5500;
+      --primary-dim: rgba(255,85,0,0.15);
+      --dark: #111111;
+      --card: #1e1e1e;
+      --card2: #252525;
+      --border: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.55);
+      --radius: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Work Sans', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,.bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── HEADER ── */
+    .header {
+      background: #161616;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .header-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--primary); }
+    .sucursal-badge {
+      background: var(--primary-dim);
+      border: 1px solid rgba(255,85,0,0.3);
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 12px; font-weight: 600; color: var(--primary);
+      letter-spacing: 0.5px;
+    }
+
+    /* ── PIN SCREEN ── */
+    #screen-pin {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 32px 24px;
+    }
+    .pin-header { text-align: center; margin-bottom: 40px; }
+    .pin-logo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--primary); letter-spacing: 3px; }
+    .pin-sub { color: var(--muted); font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+    .pin-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px 28px; width: 100%; max-width: 340px; text-align: center;
+    }
+    .pin-card h2 { font-size: 26px; margin-bottom: 6px; }
+    .pin-card p { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+    .pin-dots { display: flex; justify-content: center; gap: 14px; margin-bottom: 28px; }
+    .pin-dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .pin-dot.filled { background: var(--primary); border-color: var(--primary); }
+    .pin-keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .pin-key {
+      background: var(--card2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px 10px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--text);
+      cursor: pointer; transition: background 0.15s, transform 0.1s;
+      user-select: none;
+    }
+    .pin-key:active { background: rgba(255,85,0,0.15); transform: scale(0.95); }
+    .pin-key.wide { grid-column: span 2; }
+    .pin-key.del { font-size: 20px; }
+    .pin-error {
+      background: rgba(255,60,60,0.12); border: 1px solid rgba(255,60,60,0.3);
+      border-radius: var(--radius); color: #ff6b6b; font-size: 13px;
+      padding: 10px 14px; margin-top: 16px; display: none;
+    }
+    .pin-error.show { display: block; }
+
+    /* ── MAIN CONTENT ── */
+    .content { padding: 24px 16px; max-width: 520px; margin: 0 auto; }
+
+    /* ── SEARCH SECTION ── */
+    .search-box {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px 20px; margin-bottom: 24px;
+    }
+    .search-box h2 { font-size: 26px; margin-bottom: 6px; }
+    .search-box p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+    .search-row { display: flex; gap: 10px; }
+    .input-field {
+      flex: 1; background: var(--card2); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+      color: var(--text); font-family: 'Work Sans', sans-serif; font-size: 18px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .input-field:focus { border-color: var(--primary); }
+    .input-field::placeholder { color: var(--muted); font-size: 15px; }
+    .btn {
+      padding: 14px 24px; border: none; border-radius: var(--radius);
+      font-family: 'Work Sans', sans-serif; font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .btn:active { transform: translateY(0) !important; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(255,85,0,0.4); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+    .search-error {
+      background: rgba(255,60,60,0.12); border: 1px solid rgba(255,60,60,0.3);
+      border-radius: var(--radius); color: #ff6b6b; font-size: 13px;
+      padding: 10px 14px; margin-top: 12px; display: none;
+    }
+    .search-error.show { display: block; }
+
+    /* ── CLIENTE CARD ── */
+    .cliente-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 20px;
+    }
+    .cliente-card-header {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .avatar-lg {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--primary-dim); border: 2px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--primary);
+      flex-shrink: 0;
+    }
+    .cliente-info h3 { font-size: 22px; }
+    .cliente-info p { color: var(--muted); font-size: 13px; }
+    .puntos-display-cajero {
+      font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: var(--primary);
+      line-height: 1; padding: 0 20px 16px;
+    }
+    .puntos-display-cajero small {
+      font-family: 'Work Sans', sans-serif; font-size: 13px;
+      font-weight: 600; color: var(--muted); letter-spacing: 1px; text-transform: uppercase;
+      display: block; margin-top: -4px;
+    }
+
+    /* ── BANNERS ── */
+    .banner {
+      padding: 16px 20px;
+      font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .banner-icon { font-size: 22px; flex-shrink: 0; }
+    .banner-content { flex: 1; }
+    .banner-content small { display: block; font-size: 12px; font-weight: 500; opacity: 0.8; margin-top: 2px; }
+    .banner-orange {
+      background: rgba(255,85,0,0.18); border-top: 2px solid var(--primary);
+      color: var(--primary);
+    }
+    .banner-red {
+      background: rgba(255,50,50,0.15); border-top: 2px solid #ff3b3b;
+      color: #ff6b6b;
+    }
+    .banner-green {
+      background: rgba(72,199,142,0.12); border-top: 2px solid #48c78e;
+      color: #48c78e;
+    }
+    .banner-btn {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 8px 14px; font-family: 'Work Sans', sans-serif;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      white-space: nowrap; transition: opacity 0.2s;
+    }
+    .banner-btn:hover { opacity: 0.85; }
+    .banner-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── COMPRA SECTION ── */
+    .compra-section { padding: 20px; }
+    .compra-section h3 { font-size: 20px; margin-bottom: 16px; }
+    .monto-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+    .monto-prefix {
+      font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+      color: var(--muted); line-height: 1; padding-top: 2px;
+    }
+    .input-monto {
+      flex: 1; background: var(--card2); border: 2px solid var(--border);
+      border-radius: var(--radius); padding: 14px 16px;
+      color: var(--text); font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .input-monto:focus { border-color: var(--primary); }
+    .input-monto::placeholder { color: var(--muted); }
+    .puntos-preview {
+      background: var(--primary-dim); border: 1px solid rgba(255,85,0,0.2);
+      border-radius: var(--radius); padding: 12px 16px;
+      font-size: 14px; color: var(--muted); margin-bottom: 16px;
+      display: none;
+    }
+    .puntos-preview.show { display: block; }
+    .puntos-preview strong { color: var(--primary); font-size: 16px; }
+
+    .confirm-banner {
+      background: rgba(72,199,142,0.12); border: 1px solid rgba(72,199,142,0.3);
+      border-radius: var(--radius); padding: 16px; margin-top: 12px;
+      color: #48c78e; font-size: 14px; font-weight: 600;
+      display: none; text-align: center;
+    }
+    .confirm-banner.show { display: block; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #1e1e1e; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 24px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 9999; white-space: nowrap; max-width: 90vw;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: rgba(72,199,142,0.4); color: #48c78e; }
+    .toast.error { border-color: rgba(255,100,100,0.4); color: #ff6b6b; }
+
+    /* ── LOGOUT ── */
+    .logout-row { padding: 0 16px 32px; max-width: 520px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════ PIN SCREEN ═══════════════ -->
+<div id="screen-pin" class="screen active">
+  <div class="pin-header">
+    <div class="pin-logo">🔥 TITO'S REWARDS</div>
+    <div class="pin-sub">Cajero — Barrio Antiguo</div>
+  </div>
+  <div class="pin-card">
+    <h2>Acceso Cajero</h2>
+    <p>Ingresa el PIN de 4 dígitos</p>
+    <div class="pin-dots">
+      <div class="pin-dot" id="dot-0"></div>
+      <div class="pin-dot" id="dot-1"></div>
+      <div class="pin-dot" id="dot-2"></div>
+      <div class="pin-dot" id="dot-3"></div>
+    </div>
+    <div class="pin-keypad">
+      <div class="pin-key" data-k="1">1</div>
+      <div class="pin-key" data-k="2">2</div>
+      <div class="pin-key" data-k="3">3</div>
+      <div class="pin-key" data-k="4">4</div>
+      <div class="pin-key" data-k="5">5</div>
+      <div class="pin-key" data-k="6">6</div>
+      <div class="pin-key" data-k="7">7</div>
+      <div class="pin-key" data-k="8">8</div>
+      <div class="pin-key" data-k="9">9</div>
+      <div class="pin-key wide" data-k="0">0</div>
+      <div class="pin-key del" data-k="del">⌫</div>
+    </div>
+    <div class="pin-error" id="pin-error">PIN incorrecto. Intenta de nuevo.</div>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN CAJERO ═══════════════ -->
+<div id="screen-cajero" class="screen">
+  <div class="header">
+    <div class="header-logo">🔥 TITO'S REWARDS</div>
+    <div class="sucursal-badge">Cajero — Barrio Antiguo</div>
+  </div>
+
+  <div class="content">
+    <!-- Búsqueda -->
+    <div class="search-box">
+      <h2>Buscar Cliente</h2>
+      <p>Ingresa el número de celular del cliente</p>
+      <div class="search-row">
+        <input class="input-field" type="tel" id="input-buscar" placeholder="Ej. 8112345678" maxlength="15" inputmode="numeric" />
+        <button class="btn btn-primary" id="btn-buscar">Buscar</button>
+      </div>
+      <div class="search-error" id="search-error"></div>
+    </div>
+
+    <!-- Perfil del cliente (oculto hasta buscar) -->
+    <div id="cliente-encontrado" style="display:none;">
+
+      <div class="cliente-card">
+        <div class="cliente-card-header">
+          <div class="avatar-lg" id="cj-avatar">T</div>
+          <div class="cliente-info">
+            <h3 id="cj-nombre">—</h3>
+            <p id="cj-telefono">—</p>
+            <p id="cj-sucursal" style="color:var(--primary);font-weight:600;font-size:12px;margin-top:2px;">—</p>
+          </div>
+        </div>
+
+        <div class="puntos-display-cajero" id="cj-puntos-display">
+          0
+          <small>puntos acumulados</small>
+        </div>
+
+        <!-- Banner descuento bienvenida -->
+        <div class="banner banner-orange" id="banner-bienvenida" style="display:none;">
+          <div class="banner-icon">🎁</div>
+          <div class="banner-content">
+            10% DESCUENTO BIENVENIDA
+            <small>Primera compra — Aplicar descuento al cobrar</small>
+          </div>
+          <button class="banner-btn" id="btn-aplicar-descuento">APLICADO ✓</button>
+        </div>
+
+        <!-- Banners de canjes pendientes -->
+        <div id="canjes-pendientes-container"></div>
+
+        <!-- Registrar compra -->
+        <div class="compra-section">
+          <h3>Registrar Compra</h3>
+          <div class="monto-row">
+            <div class="monto-prefix">$</div>
+            <input class="input-monto" type="number" id="input-monto" placeholder="0" min="0" step="1" />
+          </div>
+          <div class="puntos-preview" id="puntos-preview">
+            Esta compra suma <strong id="preview-pts">0</strong> puntos a <span id="preview-nombre">—</span>
+          </div>
+          <button class="btn btn-primary" id="btn-sumar" style="width:100%;">SUMAR PUNTOS →</button>
+          <div class="confirm-banner" id="confirm-banner"></div>
+        </div>
+      </div>
+
+      <div class="logout-row">
+        <button class="btn btn-ghost" id="btn-nueva-busqueda" style="width:100%;">← Nueva búsqueda</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="airtable.js"></script>
+<script>
+  // ─── PIN ─────────────────────────────────────────────────
+  const PIN_CORRECTO = '1234';
+  let pinActual = '';
+  let clienteActual = null;
+  let canjesPendientes = [];
+
+  document.querySelectorAll('.pin-key').forEach(key => {
+    key.addEventListener('click', () => {
+      const k = key.dataset.k;
+      if (k === 'del') {
+        pinActual = pinActual.slice(0, -1);
+      } else {
+        if (pinActual.length >= 4) return;
+        pinActual += k;
+      }
+      actualizarDots();
+      if (pinActual.length === 4) verificarPin();
+    });
+  });
+
+  function actualizarDots() {
+    for (let i = 0; i < 4; i++) {
+      document.getElementById(`dot-${i}`).classList.toggle('filled', i < pinActual.length);
+    }
+  }
+
+  function verificarPin() {
+    if (pinActual === PIN_CORRECTO) {
+      document.getElementById('pin-error').classList.remove('show');
+      showScreen('screen-cajero');
+    } else {
+      document.getElementById('pin-error').classList.add('show');
+      pinActual = '';
+      setTimeout(() => actualizarDots(), 100);
+    }
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => {
+      s.classList.remove('active'); s.style.display = 'none';
+    });
+    const el = document.getElementById(id);
+    if (el) { el.style.display = ''; el.classList.add('active'); }
+  }
+
+  // ─── BÚSQUEDA ────────────────────────────────────────────
+  document.getElementById('input-buscar').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-buscar').click();
+  });
+
+  document.getElementById('btn-buscar').addEventListener('click', async () => {
+    const tel = document.getElementById('input-buscar').value.trim().replace(/\s+/g, '');
+    const errEl = document.getElementById('search-error');
+    errEl.classList.remove('show');
+
+    if (tel.length < 10) {
+      errEl.textContent = 'Ingresa un número válido de 10 dígitos.';
+      errEl.classList.add('show');
+      return;
+    }
+
+    const btn = document.getElementById('btn-buscar');
+    btn.disabled = true; btn.textContent = 'Buscando…';
+    try {
+      const record = await buscarClientePorTelefono(tel);
+      if (!record) {
+        errEl.textContent = 'Cliente no encontrado. Pídele que se registre en /cliente.';
+        errEl.classList.add('show');
+      } else {
+        clienteActual = record;
+        await cargarPerfilCliente();
+      }
+    } catch(e) {
+      errEl.textContent = 'Error de conexión. Revisa el internet.';
+      errEl.classList.add('show');
+    }
+    btn.disabled = false; btn.textContent = 'Buscar';
+  });
+
+  async function cargarPerfilCliente() {
+    const f = clienteActual.fields;
+    const nombre = f.nombre || 'Cliente';
+    const puntos = f.puntos_totales || 0;
+
+    document.getElementById('cj-avatar').textContent = nombre.charAt(0).toUpperCase();
+    document.getElementById('cj-nombre').textContent = nombre;
+    document.getElementById('cj-telefono').textContent = f.telefono || '—';
+    document.getElementById('cj-sucursal').textContent = `📍 ${f.sucursal_registro || SUCURSAL_BARRIO}`;
+    document.getElementById('cj-puntos-display').innerHTML = `${formatearPuntos(puntos)}<small>puntos acumulados</small>`;
+
+    // Descuento bienvenida
+    const bannerBienvenida = document.getElementById('banner-bienvenida');
+    bannerBienvenida.style.display = f.descuento_bienvenida ? 'flex' : 'none';
+
+    // Canjes pendientes
+    canjesPendientes = await obtenerCanjesPendientesCliente(f.telefono);
+    renderizarCanjesPendientes();
+
+    // Preview de puntos
+    document.getElementById('input-monto').value = '';
+    document.getElementById('puntos-preview').classList.remove('show');
+    document.getElementById('confirm-banner').classList.remove('show');
+    document.getElementById('preview-nombre').textContent = nombre;
+
+    document.getElementById('cliente-encontrado').style.display = 'block';
+    document.getElementById('cliente-encontrado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function renderizarCanjesPendientes() {
+    const container = document.getElementById('canjes-pendientes-container');
+    if (canjesPendientes.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+    container.innerHTML = canjesPendientes.map(canje => `
+      <div class="banner banner-red" id="banner-canje-${canje.id}">
+        <div class="banner-icon">⚠️</div>
+        <div class="banner-content">
+          CANJE PENDIENTE: ${canje.fields.recompensa}
+          <small>Fecha: ${canje.fields.fecha || '—'} · Puntos: ${canje.fields.puntos_usados}</small>
+        </div>
+        <button class="banner-btn" onclick="marcarCanje('${canje.id}')">APLICADO ✓</button>
+      </div>
+    `).join('');
+  }
+
+  // Aplicar descuento bienvenida
+  document.getElementById('btn-aplicar-descuento').addEventListener('click', async () => {
+    const btn = document.getElementById('btn-aplicar-descuento');
+    btn.disabled = true; btn.textContent = 'Guardando…';
+    try {
+      await actualizarCliente(clienteActual.id, { descuento_bienvenida: false });
+      clienteActual.fields.descuento_bienvenida = false;
+      document.getElementById('banner-bienvenida').style.display = 'none';
+      showToast('✅ Descuento de bienvenida aplicado.', 'success');
+    } catch(e) {
+      showToast('Error al actualizar. Intenta de nuevo.', 'error');
+      btn.disabled = false; btn.textContent = 'APLICADO ✓';
+    }
+  });
+
+  // Marcar canje como aplicado
+  async function marcarCanje(canjeId) {
+    const btn = document.querySelector(`#banner-canje-${canjeId} .banner-btn`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Guardando…'; }
+    try {
+      await marcarCanjeAplicado(canjeId);
+      const banner = document.getElementById(`banner-canje-${canjeId}`);
+      if (banner) {
+        banner.className = 'banner banner-green';
+        banner.querySelector('.banner-content').innerHTML = `Canje aplicado correctamente <small>Marcado como aplicado ahora</small>`;
+        banner.querySelector('.banner-btn').style.display = 'none';
+      }
+      showToast('✅ Canje marcado como aplicado.', 'success');
+    } catch(e) {
+      showToast('Error al marcar canje. Intenta de nuevo.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'APLICADO ✓'; }
+    }
+  }
+
+  // Preview de puntos al escribir monto
+  document.getElementById('input-monto').addEventListener('input', () => {
+    const monto = parseFloat(document.getElementById('input-monto').value) || 0;
+    const preview = document.getElementById('puntos-preview');
+    if (monto > 0) {
+      const pts = calcularPuntos(monto);
+      document.getElementById('preview-pts').textContent = formatearPuntos(pts);
+      preview.classList.add('show');
+    } else {
+      preview.classList.remove('show');
+    }
+    document.getElementById('confirm-banner').classList.remove('show');
+  });
+
+  // Sumar puntos
+  document.getElementById('btn-sumar').addEventListener('click', async () => {
+    const monto = parseFloat(document.getElementById('input-monto').value);
+    if (!monto || monto <= 0) {
+      showToast('Ingresa un monto válido.', 'error');
+      return;
+    }
+    const btn = document.getElementById('btn-sumar');
+    btn.disabled = true; btn.textContent = 'Procesando…';
+
+    try {
+      const f = clienteActual.fields;
+      const pts = calcularPuntos(monto);
+      const nuevosPuntos = (f.puntos_totales || 0) + pts;
+      const nuevoGasto = (f.gasto_total || 0) + monto;
+
+      // Ranking mensual: acumula puntos_mes solo del mes actual
+      const mes = mesActual();
+      const puntosMesBase = (f.mes_ranking === mes) ? (f.puntos_mes || 0) : 0;
+      const nuevosPuntosMes = puntosMesBase + pts;
+
+      await Promise.all([
+        actualizarCliente(clienteActual.id, {
+          puntos_totales: nuevosPuntos,
+          gasto_total: nuevoGasto,
+          puntos_mes: nuevosPuntosMes,
+          mes_ranking: mes,
+        }),
+        crearTransaccion(f.telefono, f.nombre, monto, pts, SUCURSAL_BARRIO, 'Cajero Barrio'),
+      ]);
+
+      clienteActual.fields.puntos_totales = nuevosPuntos;
+      clienteActual.fields.gasto_total = nuevoGasto;
+
+      // Actualizar display de puntos
+      document.getElementById('cj-puntos-display').innerHTML =
+        `${formatearPuntos(nuevosPuntos)}<small>puntos acumulados</small>`;
+
+      // Confirmación
+      const confirmEl = document.getElementById('confirm-banner');
+      confirmEl.innerHTML = `✅ Se sumaron <strong>${formatearPuntos(pts)} puntos</strong> a ${f.nombre}. Total: <strong>${formatearPuntos(nuevosPuntos)} pts</strong>`;
+      confirmEl.classList.add('show');
+
+      document.getElementById('input-monto').value = '';
+      document.getElementById('puntos-preview').classList.remove('show');
+      showToast(`✅ ${formatearPuntos(pts)} pts sumados a ${f.nombre}`, 'success');
+    } catch(e) {
+      showToast(e.message || 'Error al sumar puntos.', 'error');
+      console.error('Error sumar puntos:', e);
+    }
+    btn.disabled = false; btn.textContent = 'SUMAR PUNTOS →';
+  });
+
+  // Nueva búsqueda
+  document.getElementById('btn-nueva-busqueda').addEventListener('click', () => {
+    document.getElementById('cliente-encontrado').style.display = 'none';
+    document.getElementById('input-buscar').value = '';
+    document.getElementById('search-error').classList.remove('show');
+    clienteActual = null;
+    canjesPendientes = [];
+    document.getElementById('input-buscar').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ─── TOAST ───────────────────────────────────────────────
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = `toast ${type}`;
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+</script>
+</body>
+</html>

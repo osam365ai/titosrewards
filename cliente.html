@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tito's Rewards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #FF5500;
+      --primary-dim: rgba(255,85,0,0.15);
+      --dark: #111111;
+      --card: #1e1e1e;
+      --card2: #252525;
+      --border: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.55);
+      --radius: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Work Sans', sans-serif;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1,h2,h3,.bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+
+    /* ── SCREENS ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── LOADING ── */
+    #loading {
+      position: fixed; inset: 0; background: var(--dark);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px;
+      z-index: 999;
+    }
+    #loading.hidden { display: none; }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── LOGO ── */
+    .logo-block {
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+    }
+    .logo-flame { font-size: 48px; line-height: 1; }
+    .logo-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 38px; letter-spacing: 3px;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .logo-sub {
+      font-size: 11px; font-weight: 500; letter-spacing: 3px;
+      color: var(--muted); text-transform: uppercase;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #screen-login {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 32px 24px;
+    }
+    #screen-login .logo-block { margin-bottom: 48px; }
+    .login-card {
+      width: 100%; max-width: 380px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 28px;
+    }
+    .login-card h2 {
+      font-size: 28px; margin-bottom: 6px;
+    }
+    .login-card p {
+      color: var(--muted); font-size: 14px; margin-bottom: 28px;
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 12px; font-weight: 600;
+      letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 8px;
+    }
+    .form-group input {
+      width: 100%;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      color: var(--text);
+      font-family: 'Work Sans', sans-serif;
+      font-size: 18px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: var(--primary); }
+    .form-group input::placeholder { color: var(--muted); font-size: 15px; }
+    .btn {
+      display: block; width: 100%;
+      padding: 15px 24px;
+      border: none; border-radius: var(--radius);
+      font-family: 'Work Sans', sans-serif;
+      font-size: 16px; font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s;
+    }
+    .btn:active { transform: translateY(0) !important; }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,85,0,0.4);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none;
+    }
+    .btn-ghost {
+      background: transparent; color: var(--muted);
+      border: 1px solid var(--border);
+      margin-top: 12px;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+    .error-msg {
+      background: rgba(255,60,60,0.12);
+      border: 1px solid rgba(255,60,60,0.3);
+      border-radius: var(--radius);
+      color: #ff6b6b; font-size: 13px; padding: 10px 14px;
+      margin-bottom: 16px; display: none;
+    }
+    .error-msg.show { display: block; }
+
+    /* ── MAIN SCREEN ── */
+    #screen-main { padding-bottom: 40px; }
+
+    .header {
+      background: #161616;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 2px; color: var(--primary);
+    }
+    .header-logo span { color: var(--muted); font-size: 12px; font-family: 'Work Sans', sans-serif; letter-spacing: 1px; display: block; }
+    .header-user {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--primary-dim); border: 2px solid var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 14px; color: var(--primary);
+    }
+    .header-name { font-size: 13px; font-weight: 600; }
+    .btn-logout {
+      background: transparent; border: 1px solid var(--border);
+      border-radius: 6px; padding: 6px 12px;
+      color: var(--muted); font-family: 'Work Sans', sans-serif;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-logout:hover { border-color: #ff4444; color: #ff6b6b; }
+
+    .main-content { padding: 20px 16px; max-width: 480px; margin: 0 auto; }
+
+    /* ── POINTS CARD ── */
+    .points-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 20px;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .points-card::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(255,85,0,0.12), transparent 70%);
+      border-radius: 50%; transform: translate(30%, -30%);
+    }
+    .rank-badges {
+      display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .rank-badge {
+      background: var(--primary-dim);
+      border: 1px solid rgba(255,85,0,0.3);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px; font-weight: 600; color: var(--primary);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .points-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 72px; line-height: 1;
+      color: var(--text);
+      letter-spacing: 2px;
+    }
+    .points-label {
+      font-size: 12px; font-weight: 600; letter-spacing: 2px;
+      color: var(--muted); text-transform: uppercase; margin-bottom: 20px;
+    }
+    .progress-wrap { margin-top: 4px; }
+    .progress-info {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--muted); margin-bottom: 8px;
+    }
+    .progress-bar-bg {
+      background: rgba(255,255,255,0.08);
+      border-radius: 100px; height: 8px; overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%; border-radius: 100px;
+      background: linear-gradient(90deg, #FF5500, #ff7a33);
+      transition: width 0.6s ease;
+    }
+    .progress-text {
+      font-size: 13px; color: var(--muted); margin-top: 10px;
+    }
+    .progress-text strong { color: var(--primary); }
+
+    /* ── SECTION TITLES ── */
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 1px;
+      margin-bottom: 14px; color: var(--text);
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── REWARDS ── */
+    .rewards-grid {
+      display: flex; flex-direction: column; gap: 10px;
+      margin-bottom: 28px;
+    }
+    .reward-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .reward-item.available { border-color: rgba(255,85,0,0.25); }
+    .reward-info { display: flex; align-items: center; gap: 14px; }
+    .reward-emoji { font-size: 28px; }
+    .reward-name { font-size: 15px; font-weight: 600; }
+    .reward-pts { font-size: 13px; color: var(--muted); }
+    .btn-canjear {
+      background: var(--primary); color: #fff;
+      border: none; border-radius: 6px;
+      padding: 9px 18px; font-family: 'Work Sans', sans-serif;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: transform 0.18s, box-shadow 0.18s;
+      white-space: nowrap;
+    }
+    .btn-canjear:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,85,0,0.4); }
+    .btn-canjear:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .locked-badge {
+      background: rgba(255,255,255,0.06);
+      border-radius: 6px; padding: 9px 14px;
+      font-size: 12px; font-weight: 600; color: var(--muted);
+    }
+    .empty-state {
+      text-align: center; color: var(--muted);
+      font-size: 14px; padding: 28px; background: var(--card);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      margin-bottom: 28px;
+    }
+
+    /* ── RANKING ── */
+    .ranking-list { margin-bottom: 28px; }
+    .ranking-item {
+      display: flex; align-items: center;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 12px;
+    }
+    .ranking-item:last-child { border-bottom: none; }
+    .ranking-item.is-me {
+      background: rgba(255,85,0,0.08);
+      border-radius: var(--radius);
+      border-bottom: none;
+      border: 1px solid rgba(255,85,0,0.25);
+      margin: 2px 0;
+    }
+    .rank-pos {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; width: 32px; text-align: center;
+      color: var(--muted);
+    }
+    .rank-pos.top1 { color: #FFD700; }
+    .rank-pos.top2 { color: #C0C0C0; }
+    .rank-pos.top3 { color: #CD7F32; }
+    .ranking-item.is-me .rank-pos { color: var(--primary); }
+    .rank-name { flex: 1; font-size: 15px; font-weight: 500; }
+    .ranking-item.is-me .rank-name { color: var(--primary); font-weight: 700; }
+    .rank-pts {
+      font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+      color: var(--muted);
+    }
+    .ranking-item.is-me .rank-pts { color: var(--primary); }
+    .ranking-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+      background: #1e1e1e; border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 14px 24px;
+      font-size: 14px; font-weight: 500;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 9999; white-space: nowrap; max-width: 90vw;
+    }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: rgba(72,199,142,0.4); color: #48c78e; }
+    .toast.error { border-color: rgba(255,100,100,0.4); color: #ff6b6b; }
+
+    /* ── MODAL CONFIRM ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px 24px; max-width: 360px; width: 100%;
+      transform: scale(0.9); transition: transform 0.25s;
+    }
+    .modal-overlay.show .modal { transform: scale(1); }
+    .modal h3 { font-size: 24px; margin-bottom: 10px; }
+    .modal p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 10px; }
+    .modal-actions .btn { flex: 1; }
+    .btn-outline {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--text); border-radius: var(--radius);
+      font-family: 'Work Sans', sans-serif; font-size: 15px; font-weight: 600;
+    }
+    .btn-outline:hover { border-color: rgba(255,255,255,0.3); transform: translateY(-1px); }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="spinner"></div>
+  <p style="color:var(--muted);font-size:14px;">Cargando…</p>
+</div>
+
+<!-- ═══════════════════════════ LOGIN ═══════════════════════════ -->
+<div id="screen-login" class="screen">
+  <div class="logo-block">
+    <div class="logo-flame">🔥</div>
+    <div class="logo-title">TITO'S REWARDS</div>
+    <div class="logo-sub">Alitas Adictivas</div>
+  </div>
+  <div class="login-card">
+    <h2 id="login-title">Bienvenido</h2>
+    <p id="login-subtitle">Ingresa tus datos para ver tus puntos o crear tu cuenta</p>
+    <div id="login-error" class="error-msg"></div>
+
+    <div class="form-group">
+      <label>Tu nombre</label>
+      <input type="text" id="input-nombre" placeholder="¿Cómo te llamas?" autocomplete="name" />
+    </div>
+    <div class="form-group">
+      <label>Número de celular</label>
+      <input type="tel" id="input-telefono" placeholder="Ej. 8112345678" maxlength="15" inputmode="numeric" autocomplete="tel" />
+    </div>
+
+    <div id="banner-nuevo" style="display:none;background:rgba(255,85,0,0.1);border:1px solid rgba(255,85,0,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--primary);line-height:1.5;">
+      🎁 <strong>¡Primera vez aquí!</strong> Al registrarte obtienes <strong>10% de descuento</strong> en tu primera compra.
+    </div>
+
+    <button class="btn btn-primary" id="btn-login">ENTRAR →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PANTALLA PRINCIPAL ═══════════════════════ -->
+<div id="screen-main" class="screen">
+  <div class="header">
+    <div class="header-logo">
+      🔥 TITO'S<br>
+      <span>REWARDS</span>
+    </div>
+    <div class="header-user">
+      <button class="btn-logout" id="btn-logout">Salir</button>
+      <div>
+        <div class="header-name" id="header-nombre">—</div>
+        <div style="font-size:11px;color:var(--muted);">Barrio Antiguo</div>
+      </div>
+      <div class="avatar" id="header-avatar">T</div>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- CARD DE PUNTOS -->
+    <div class="points-card" id="points-card">
+      <div class="rank-badges">
+        <div class="rank-badge" id="rank-global-badge">🏆 —</div>
+        <div class="rank-badge" id="rank-barrio-badge">🔥 —</div>
+      </div>
+      <div class="points-number" id="puntos-display">0</div>
+      <div class="points-label">PUNTOS ACUMULADOS</div>
+      <div class="progress-wrap">
+        <div class="progress-info">
+          <span id="progress-desde">0 pts</span>
+          <span id="progress-hasta">—</span>
+        </div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+        </div>
+        <div class="progress-text" id="progress-text">Calculando…</div>
+      </div>
+    </div>
+
+    <!-- CANJES DISPONIBLES -->
+    <div class="section-title">🎁 Mis Canjes Disponibles</div>
+    <div id="rewards-container" class="rewards-grid"></div>
+
+    <!-- RANKING BARRIO -->
+    <div class="section-title">🔥 Ranking Barrio Antiguo</div>
+    <div class="ranking-card" id="ranking-barrio-container">
+      <div class="ranking-list" id="ranking-barrio-list"></div>
+    </div>
+
+    <!-- RANKING GLOBAL -->
+    <div class="section-title">🏆 Ranking Global</div>
+    <div class="ranking-card" id="ranking-global-container">
+      <div class="ranking-list" id="ranking-global-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal de confirmación de canje -->
+<div class="modal-overlay" id="modal-canje">
+  <div class="modal">
+    <h3 id="modal-title">Canjear recompensa</h3>
+    <p id="modal-desc">¿Deseas canjear esta recompensa? El cajero la marcará como aplicada en tu próxima visita.</p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" id="modal-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="modal-confirm">Canjear ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="config.js"></script>
+<script src="airtable.js"></script>
+<script>
+  // ─── Estado ──────────────────────────────────────────────
+  let cliente = null;
+  let pendingCanje = null;
+
+  // ─── Utilidades UI ───────────────────────────────────────
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => {
+      s.classList.remove('active');
+      s.style.display = 'none';
+    });
+    const el = document.getElementById(id);
+    if (el) { el.style.display = ''; el.classList.add('active'); }
+  }
+
+  function setLoading(show) {
+    document.getElementById('loading').classList.toggle('hidden', !show);
+  }
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type}`;
+    requestAnimationFrame(() => t.classList.add('show'));
+    setTimeout(() => t.classList.remove('show'), 3200);
+  }
+
+  function showError(id, msg) {
+    const el = document.getElementById(id);
+    el.textContent = msg; el.classList.add('show');
+  }
+  function hideError(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  function setBtn(id, disabled, text) {
+    const b = document.getElementById(id);
+    if (text) b.textContent = text;
+    b.disabled = disabled;
+  }
+
+  // ─── Init ────────────────────────────────────────────────
+  async function init() {
+    setLoading(true);
+    const token = localStorage.getItem('titos_token');
+    if (token) {
+      try {
+        const record = await buscarClientePorToken(token);
+        if (record) {
+          cliente = record;
+          await mostrarPantallaPrincipal();
+          setLoading(false);
+          return;
+        }
+      } catch(e) { /* fall through to login */ }
+    }
+    setLoading(false);
+    showScreen('screen-login');
+  }
+
+  // ─── LOGIN + REGISTRO (pantalla unificada) ───────────────
+  // Mostrar banner "primera vez" cuando el teléfono pierde el foco y tiene 10+ dígitos
+  document.getElementById('input-telefono').addEventListener('blur', async () => {
+    const tel = document.getElementById('input-telefono').value.trim().replace(/\s+/g, '');
+    if (tel.length < 10) return;
+    try {
+      const record = await buscarClientePorTelefono(tel);
+      const banner = document.getElementById('banner-nuevo');
+      if (!record) {
+        // Teléfono no existe → mostrar banner de bienvenida
+        banner.style.display = 'block';
+        document.getElementById('login-title').textContent = '¡Nuevo aquí! 👋';
+        document.getElementById('login-subtitle').textContent = 'Crea tu cuenta gratis en segundos.';
+        document.getElementById('btn-login').textContent = 'CREAR CUENTA 🎉';
+      } else {
+        // Teléfono ya existe → ocultar banner, modo login
+        banner.style.display = 'none';
+        document.getElementById('login-title').textContent = `¡Hola de nuevo!`;
+        document.getElementById('login-subtitle').textContent = 'Ingresa tu nombre y celular para entrar.';
+        document.getElementById('btn-login').textContent = 'ENTRAR →';
+        // Pre-llenar nombre si lo tenemos
+        const inputNombre = document.getElementById('input-nombre');
+        if (!inputNombre.value.trim()) inputNombre.value = record.fields.nombre || '';
+      }
+    } catch(e) { /* silencioso, el error se maneja al hacer click */ }
+  });
+
+  document.getElementById('input-telefono').addEventListener('input', () => {
+    // Resetear estado si cambia el teléfono
+    document.getElementById('banner-nuevo').style.display = 'none';
+    document.getElementById('login-title').textContent = 'Bienvenido';
+    document.getElementById('login-subtitle').textContent = 'Ingresa tus datos para ver tus puntos o crear tu cuenta';
+    document.getElementById('btn-login').textContent = 'ENTRAR →';
+    hideError('login-error');
+  });
+
+  ['input-nombre', 'input-telefono'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('btn-login').click();
+    });
+  });
+
+  document.getElementById('btn-login').addEventListener('click', async () => {
+    const nombre = document.getElementById('input-nombre').value.trim();
+    const tel = document.getElementById('input-telefono').value.trim().replace(/\s+/g, '');
+
+    if (!nombre) { showError('login-error', 'Por favor escribe tu nombre.'); return; }
+    if (tel.length < 10) { showError('login-error', 'Ingresa un número de celular válido (10 dígitos).'); return; }
+    hideError('login-error');
+
+    const btnTextoOriginal = document.getElementById('btn-login').textContent;
+    setBtn('btn-login', true, 'Un momento…');
+
+    try {
+      const record = await buscarClientePorTelefono(tel);
+      if (record) {
+        // Cliente existente → actualizar token y entrar
+        const newToken = await actualizarTokenCliente(record.id);
+        localStorage.setItem('titos_token', newToken);
+        record.fields.token_sesion = newToken;
+        cliente = record;
+        await mostrarPantallaPrincipal();
+      } else {
+        // Cliente nuevo → registrar con nombre y teléfono
+        const newRecord = await crearCliente(nombre, tel, SUCURSAL_BARRIO);
+        localStorage.setItem('titos_token', newRecord.fields.token_sesion);
+        cliente = newRecord;
+        await mostrarPantallaPrincipal();
+        showToast('🎉 ¡Cuenta creada! Tienes 10% en tu primera compra.', 'success');
+      }
+    } catch(e) {
+      showError('login-error', 'Error de conexión. Revisa tu internet e intenta de nuevo.');
+      setBtn('btn-login', false, btnTextoOriginal);
+    }
+  });
+
+  // ─── PANTALLA PRINCIPAL ──────────────────────────────────
+  async function mostrarPantallaPrincipal() {
+    showScreen('screen-main');
+    const f = cliente.fields;
+    const nombre = f.nombre || 'Cliente';
+    const puntos = f.puntos_totales || 0;
+
+    // Header
+    document.getElementById('header-nombre').textContent = nombre;
+    document.getElementById('header-avatar').textContent = nombre.charAt(0).toUpperCase();
+
+    // Puntos
+    document.getElementById('puntos-display').textContent = formatearPuntos(puntos);
+
+    // Barra de progreso
+    const { porcentaje, siguiente, faltan } = calcularProgreso(puntos);
+    const fill = document.getElementById('progress-fill');
+    setTimeout(() => fill.style.width = Math.min(porcentaje, 100) + '%', 80);
+    if (siguiente) {
+      document.getElementById('progress-hasta').textContent = `${siguiente.emoji} ${siguiente.nombre} (${formatearPuntos(siguiente.puntos)})`;
+      document.getElementById('progress-text').innerHTML = `Te faltan <strong>${formatearPuntos(faltan)} puntos</strong> para <strong>${siguiente.nombre}</strong>`;
+    } else {
+      document.getElementById('progress-hasta').textContent = '🎉 ¡Todo desbloqueado!';
+      document.getElementById('progress-text').innerHTML = '<strong style="color:var(--primary)">¡Tienes todos los canjes disponibles!</strong>';
+    }
+
+    // Canjes disponibles
+    renderRewards(puntos);
+
+    // Rankings (en background)
+    cargarRankings(puntos, f.sucursal_registro || SUCURSAL_BARRIO);
+  }
+
+  function renderRewards(puntos) {
+    const container = document.getElementById('rewards-container');
+    if (!container) return;
+    const disponibles = recompensasDisponibles(puntos);
+    const todos = REWARDS;
+
+    if (disponibles.length === 0) {
+      container.innerHTML = `<div class="empty-state">Acumula <strong style="color:var(--primary)">300 puntos</strong> para tu primer canje 🎁</div>`;
+      return;
+    }
+
+    container.innerHTML = todos.map(r => {
+      const disponible = puntos >= r.puntos;
+      return `<div class="reward-item ${disponible ? 'available' : ''}">
+        <div class="reward-info">
+          <div class="reward-emoji">${r.emoji}</div>
+          <div>
+            <div class="reward-name">${r.nombre}</div>
+            <div class="reward-pts">${formatearPuntos(r.puntos)} pts</div>
+          </div>
+        </div>
+        ${disponible
+          ? `<button class="btn-canjear" onclick="iniciarCanje('${r.nombre}', ${r.puntos}, '${r.emoji}')">Canjear</button>`
+          : `<div class="locked-badge">🔒 ${formatearPuntos(r.puntos - puntos)} pts</div>`
+        }
+      </div>`;
+    }).join('');
+  }
+
+  async function cargarRankings(puntosActuales, sucursal) {
+    try {
+      const [global, barrio] = await Promise.all([
+        obtenerRankingGlobal(),
+        obtenerRankingBarrio(SUCURSAL_BARRIO),
+      ]);
+
+      const miId = cliente.id;
+
+      // Posiciones
+      const posGlobal = global.findIndex(r => r.id === miId) + 1;
+      const posBarrio = barrio.findIndex(r => r.id === miId) + 1;
+
+      document.getElementById('rank-global-badge').textContent = `🏆 #${posGlobal || '—'} Global`;
+      document.getElementById('rank-barrio-badge').textContent = `🔥 #${posBarrio || '—'} Barrio`;
+
+      renderRanking('ranking-global-list', global.slice(0, 10), miId);
+      renderRanking('ranking-barrio-list', barrio.slice(0, 10), miId);
+    } catch(e) {
+      console.warn('Rankings no disponibles:', e);
+    }
+  }
+
+  function renderRanking(listId, records, miId) {
+    const list = document.getElementById(listId);
+    if (!list) return;
+    list.innerHTML = records.map((r, i) => {
+      const pos = i + 1;
+      const esYo = r.id === miId;
+      const nombre = r.fields.nombre || 'Cliente';
+      const pts = puntosRankingMes(r);
+      let posClass = '';
+      if (pos === 1) posClass = 'top1';
+      else if (pos === 2) posClass = 'top2';
+      else if (pos === 3) posClass = 'top3';
+      return `<div class="ranking-item ${esYo ? 'is-me' : ''}">
+        <div class="rank-pos ${posClass}">${pos}</div>
+        <div class="rank-name">${nombre}${esYo ? ' ← Tú' : ''}</div>
+        <div class="rank-pts">${formatearPuntos(pts)}</div>
+      </div>`;
+    }).join('') || '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px;">Sin datos aún</div>';
+  }
+
+  // ─── CANJE ───────────────────────────────────────────────
+  function iniciarCanje(nombre, puntos, emoji) {
+    pendingCanje = { nombre, puntos, emoji };
+    document.getElementById('modal-title').textContent = `${emoji} ${nombre}`;
+    document.getElementById('modal-desc').textContent =
+      `Se usarán ${formatearPuntos(puntos)} puntos. El cajero aplicará el canje en tu próxima visita al restaurante.`;
+    document.getElementById('modal-canje').classList.add('show');
+  }
+
+  document.getElementById('modal-cancel').addEventListener('click', () => {
+    document.getElementById('modal-canje').classList.remove('show');
+    pendingCanje = null;
+  });
+
+  document.getElementById('modal-confirm').addEventListener('click', async () => {
+    if (!pendingCanje) return;
+    const btn = document.getElementById('modal-confirm');
+    btn.disabled = true; btn.textContent = 'Procesando…';
+    try {
+      const f = cliente.fields;
+      const nuevoPuntos = (f.puntos_totales || 0) - pendingCanje.puntos;
+      if (nuevoPuntos < 0) { showToast('Puntos insuficientes.', 'error'); return; }
+
+      await Promise.all([
+        crearCanje(f.telefono, f.nombre, pendingCanje.nombre, pendingCanje.puntos, f.sucursal_registro),
+        actualizarCliente(cliente.id, { puntos_totales: nuevoPuntos }),
+      ]);
+
+      // Actualizar local
+      cliente.fields.puntos_totales = nuevoPuntos;
+      document.getElementById('modal-canje').classList.remove('show');
+      pendingCanje = null;
+      mostrarPantallaPrincipal();
+      showToast(`✅ Canje registrado. Muéstrale esto al cajero.`, 'success');
+    } catch(e) {
+      showToast('Error al canjear. Intenta de nuevo.', 'error');
+    }
+    btn.disabled = false; btn.textContent = 'Canjear ✓';
+  });
+
+  // ─── LOGOUT ──────────────────────────────────────────────
+  document.getElementById('btn-logout').addEventListener('click', () => {
+    localStorage.removeItem('titos_token');
+    cliente = null;
+    document.getElementById('input-nombre').value = '';
+    document.getElementById('input-telefono').value = '';
+    document.getElementById('banner-nuevo').style.display = 'none';
+    document.getElementById('login-title').textContent = 'Bienvenido';
+    document.getElementById('login-subtitle').textContent = 'Ingresa tus datos para ver tus puntos o crear tu cuenta';
+    document.getElementById('btn-login').textContent = 'ENTRAR →';
+    showScreen('screen-login');
+  });
+
+  // ─── ARRANQUE ────────────────────────────────────────────
+  init();
+</script>
+</body>
+</html>

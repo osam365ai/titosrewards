@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tito's Rewards — Inicio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #FF5500;
+      --dark: #111111;
+      --card: #1e1e1e;
+      --border: rgba(255,255,255,0.08);
+      --muted: rgba(255,255,255,0.5);
+      --radius: 8px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--dark); color: #fff;
+      font-family: 'Work Sans', sans-serif;
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 32px 20px;
+    }
+    .logo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; color: var(--primary); letter-spacing: 4px; text-align: center; line-height: 1; }
+    .sub { color: var(--muted); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin: 6px 0 48px; }
+    .nav-grid { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 360px; }
+    .nav-link {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 20px 22px;
+      text-decoration: none; color: #fff;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+    .nav-link:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(255,85,0,0.2);
+    }
+    .nav-icon { font-size: 32px; flex-shrink: 0; }
+    .nav-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; }
+    .nav-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .nav-arrow { margin-left: auto; font-size: 20px; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div style="font-size:48px;margin-bottom:8px;">🔥</div>
+  <div class="logo">TITO'S REWARDS</div>
+  <div class="sub">Alitas Adictivas</div>
+
+  <div class="nav-grid">
+    <a href="cliente.html" class="nav-link">
+      <div class="nav-icon">👤</div>
+      <div>
+        <div class="nav-title">App Cliente</div>
+        <div class="nav-desc">Ve tus puntos y canjea recompensas</div>
+      </div>
+      <div class="nav-arrow">→</div>
+    </a>
+    <a href="cajero-barrio.html" class="nav-link">
+      <div class="nav-icon">🏪</div>
+      <div>
+        <div class="nav-title">Cajero — Barrio</div>
+        <div class="nav-desc">Registrar compras y aplicar canjes</div>
+      </div>
+      <div class="nav-arrow">→</div>
+    </a>
+    <a href="dashboard.html" class="nav-link">
+      <div class="nav-icon">📊</div>
+      <div>
+        <div class="nav-title">Dashboard</div>
+        <div class="nav-desc">Panel del dueño — estadísticas completas</div>
+      </div>
+      <div class="nav-arrow">→</div>
+    </a>
+    <a href="leaderboard.html" class="nav-link">
+      <div class="nav-icon">🏆</div>
+      <div>
+        <div class="nav-title">Leaderboard</div>
+        <div class="nav-desc">Pantalla pública para TV del local</div>
+      </div>
+      <div class="nav-arrow">→</div>
+    </a>
+  </div>
+</body>
+</html>
