@@ -189,6 +189,60 @@
       font-size: 11px; color: var(--muted); font-weight: 500; letter-spacing: 1px;
     }
 
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      html, body { overflow: auto; height: auto; }
+
+      .header {
+        padding: 12px 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .header-left { gap: 10px; }
+      .flame { font-size: 28px; }
+      .brand-name { font-size: 26px; letter-spacing: 2px; }
+      .brand-sub { font-size: 9px; letter-spacing: 1.5px; }
+      .header-center { order: 3; width: 100%; text-align: left; }
+      .header-title { font-size: 20px; letter-spacing: 1px; }
+      .header-month { font-size: 11px; }
+      .header-right { text-align: right; }
+      .refresh-info { font-size: 10px; }
+      .countdown { font-size: 22px; }
+
+      .main {
+        grid-template-columns: 1fr;
+        padding: 14px;
+        gap: 14px;
+        overflow: visible;
+      }
+
+      .panel-header { padding: 14px 16px 12px; }
+      .panel-icon { font-size: 22px; }
+      .panel-title { font-size: 20px; }
+      .panel-subtitle { font-size: 11px; }
+
+      .rank-item { padding: 0 14px; gap: 10px; min-height: 52px; }
+      .rank-pos { font-size: 30px; width: 36px; }
+      .rank-medal { font-size: 18px; width: 22px; }
+      .rank-name { font-size: 20px; }
+      .rank-sucursal { font-size: 10px; }
+      .rank-pts { font-size: 28px; }
+      .rank-pts-label { font-size: 9px; }
+
+      .footer {
+        padding: 14px 16px;
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: center;
+      }
+      .footer-divider { display: none; }
+      .footer-stat { min-width: 80px; }
+      .footer-stat-val { font-size: 20px; }
+      .footer-stat-label { font-size: 9px; }
+      .footer-cta-main { font-size: 14px; }
+      .footer-cta-sub { font-size: 10px; }
+    }
+
     /* ── FADE ANIMATION ── */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
