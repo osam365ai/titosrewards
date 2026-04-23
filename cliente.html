@@ -390,6 +390,10 @@
       <label>Número de celular</label>
       <input type="tel" id="input-telefono" placeholder="Ej. 8112345678" maxlength="15" inputmode="numeric" autocomplete="tel" />
     </div>
+    <div class="form-group" id="group-confirmar" style="display:none;">
+      <label>Confirma tu número</label>
+      <input type="tel" id="input-confirmar" placeholder="Escribe tu número otra vez" maxlength="15" inputmode="numeric" autocomplete="off" />
+    </div>
 
     <div id="banner-nuevo" style="display:none;background:rgba(255,85,0,0.1);border:1px solid rgba(255,85,0,0.3);border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--primary);line-height:1.5;">
       🎁 <strong>¡Primera vez aquí!</strong> Al registrarte obtienes <strong>10% de descuento</strong> en tu primera compra.
@@ -548,14 +552,17 @@
       const record = await buscarClientePorTelefono(tel);
       const banner = document.getElementById('banner-nuevo');
       if (!record) {
-        // Teléfono no existe → mostrar banner de bienvenida
+        // Teléfono no existe → mostrar banner + campo confirmación
         banner.style.display = 'block';
+        document.getElementById('group-confirmar').style.display = 'block';
+        document.getElementById('input-confirmar').value = '';
         document.getElementById('login-title').textContent = '¡Nuevo aquí! 👋';
         document.getElementById('login-subtitle').textContent = 'Crea tu cuenta gratis en segundos.';
         document.getElementById('btn-login').textContent = 'CREAR CUENTA 🎉';
       } else {
-        // Teléfono ya existe → ocultar banner, modo login
+        // Teléfono ya existe → ocultar banner y confirmación, modo login
         banner.style.display = 'none';
+        document.getElementById('group-confirmar').style.display = 'none';
         document.getElementById('login-title').textContent = `¡Hola de nuevo!`;
         document.getElementById('login-subtitle').textContent = 'Ingresa tu nombre y celular para entrar.';
         document.getElementById('btn-login').textContent = 'ENTRAR →';
@@ -569,6 +576,8 @@
   document.getElementById('input-telefono').addEventListener('input', () => {
     // Resetear estado si cambia el teléfono
     document.getElementById('banner-nuevo').style.display = 'none';
+    document.getElementById('group-confirmar').style.display = 'none';
+    document.getElementById('input-confirmar').value = '';
     document.getElementById('login-title').textContent = 'Bienvenido';
     document.getElementById('login-subtitle').textContent = 'Ingresa tus datos para ver tus puntos o crear tu cuenta';
     document.getElementById('btn-login').textContent = 'ENTRAR →';
@@ -587,6 +596,17 @@
 
     if (!nombre) { showError('login-error', 'Por favor escribe tu nombre.'); return; }
     if (tel.length < 10) { showError('login-error', 'Ingresa un número de celular válido (10 dígitos).'); return; }
+
+    // Validar confirmación solo si es usuario nuevo (campo visible)
+    const grupoConfirmar = document.getElementById('group-confirmar');
+    if (grupoConfirmar.style.display !== 'none') {
+      const telConfirm = normalizarTelefono(document.getElementById('input-confirmar').value);
+      if (telConfirm !== tel) {
+        showError('login-error', 'Los números no coinciden. Verifícalos e intenta de nuevo.');
+        return;
+      }
+    }
+
     hideError('login-error');
 
     const btnTextoOriginal = document.getElementById('btn-login').textContent;
