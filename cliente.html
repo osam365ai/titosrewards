@@ -479,6 +479,11 @@
   let cliente = null;
   let pendingCanje = null;
 
+  // ─── NORMALIZAR TELÉFONO ────────────────────────────────
+  function normalizarTelefono(tel) {
+    return tel.replace(/\D/g, '').slice(-10);
+  }
+
   // ─── Utilidades UI ───────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => {
@@ -537,7 +542,7 @@
   // ─── LOGIN + REGISTRO (pantalla unificada) ───────────────
   // Mostrar banner "primera vez" cuando el teléfono pierde el foco y tiene 10+ dígitos
   document.getElementById('input-telefono').addEventListener('blur', async () => {
-    const tel = document.getElementById('input-telefono').value.trim().replace(/\s+/g, '');
+    const tel = normalizarTelefono(document.getElementById('input-telefono').value);
     if (tel.length < 10) return;
     try {
       const record = await buscarClientePorTelefono(tel);
@@ -578,7 +583,7 @@
 
   document.getElementById('btn-login').addEventListener('click', async () => {
     const nombre = document.getElementById('input-nombre').value.trim();
-    const tel = document.getElementById('input-telefono').value.trim().replace(/\s+/g, '');
+    const tel = normalizarTelefono(document.getElementById('input-telefono').value);
 
     if (!nombre) { showError('login-error', 'Por favor escribe tu nombre.'); return; }
     if (tel.length < 10) { showError('login-error', 'Ingresa un número de celular válido (10 dígitos).'); return; }

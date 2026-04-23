@@ -350,6 +350,11 @@
 <script src="config.js"></script>
 <script src="airtable.js"></script>
 <script>
+  // ─── NORMALIZAR TELÉFONO ────────────────────────────────
+  function normalizarTelefono(tel) {
+    return tel.replace(/\D/g, '').slice(-10);
+  }
+
   // ─── PIN ─────────────────────────────────────────────────
   const PIN_CORRECTO = '1234';
   let pinActual = '';
@@ -401,7 +406,7 @@
   });
 
   document.getElementById('btn-buscar').addEventListener('click', async () => {
-    const tel = document.getElementById('input-buscar').value.trim().replace(/\s+/g, '');
+    const tel = normalizarTelefono(document.getElementById('input-buscar').value);
     const errEl = document.getElementById('search-error');
     errEl.classList.remove('show');
 
