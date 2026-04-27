@@ -3,10 +3,11 @@
 // ============================================================
 
 const REWARDS = [
-  { puntos: 300,  nombre: 'Bebida',         emoji: '🥤' },
-  { puntos: 600,  nombre: 'Orden de papas', emoji: '🍟' },
-  { puntos: 1000, nombre: 'Orden de alitas',emoji: '🍗' },
-  { puntos: 2000, nombre: 'Combo completo', emoji: '🔥' },
+  { puntos: 500,  nombre: 'Coca Cola gratis',                   emoji: '🥤' },
+  { puntos: 1500, nombre: 'Orden de muslitos gratis',            emoji: '🍗' },
+  { puntos: 3000, nombre: 'Orden gratis a elegir',               emoji: '🌶️' },
+  { puntos: 4000, nombre: 'Kilo de alitas gratis',               emoji: '🍖' },
+  { puntos: 6600, nombre: 'Kilo alitas + orden a elegir + 3 Cocas', emoji: '🏆' },
 ];
 
 const SUCURSAL_BARRIO = 'Barrio Antiguo';
