@@ -458,6 +458,13 @@
       <div class="ranking-list" id="ranking-global-list"></div>
     </div>
 
+    <div style="text-align:center;margin-top:8px;padding-bottom:8px;">
+      <button onclick="document.getElementById('modal-politicas').classList.add('show')"
+        style="background:none;border:none;color:var(--muted);font-size:12px;font-family:'Work Sans',sans-serif;cursor:pointer;text-decoration:underline;">
+        Políticas y restricciones
+      </button>
+    </div>
+
   </div>
 </div>
 
@@ -470,6 +477,22 @@
       <button class="btn btn-outline" id="modal-cancel">Cancelar</button>
       <button class="btn btn-primary" id="modal-confirm">Canjear ✓</button>
     </div>
+  </div>
+</div>
+
+<!-- Modal políticas -->
+<div class="modal-overlay" id="modal-politicas">
+  <div class="modal" style="max-height:85vh;overflow-y:auto;">
+    <h3 style="margin-bottom:16px;">📋 Políticas y restricciones</h3>
+    <div style="color:var(--muted);font-size:13px;line-height:1.8;margin-bottom:24px;display:flex;flex-direction:column;gap:12px;">
+      <p><strong style="color:var(--text);">Puntos después de pagar</strong><br>El canje solo es válido con puntos ya acumulados. No es posible reservar un producto con puntos que aún no tienes.</p>
+      <p><strong style="color:var(--text);">Canjea cuando quieras</strong><br>Puedes hacer canjes las veces que quieras en el día, siempre y cuando cuentes con los puntos suficientes en tu cuenta.</p>
+      <p><strong style="color:var(--text);">Puntos no transferibles</strong><br>Los puntos son personales y no pueden cederse ni combinarse con otra cuenta.</p>
+      <p><strong style="color:var(--text);">No acumulable con otras promociones</strong><br>Los canjes no son válidos junto con otras ofertas, descuentos o promociones vigentes de Tito's.</p>
+      <p><strong style="color:var(--text);">Ranking mensual vs. puntos totales</strong><br>El ranking del mes se reinicia cada mes, pero tus puntos totales permanecen en tu cuenta sin fecha de vencimiento.</p>
+      <p><strong style="color:var(--text);">Vigencia del programa</strong><br>Tito's se reserva el derecho de modificar o cancelar el programa de rewards en cualquier momento.</p>
+    </div>
+    <button class="btn btn-primary" onclick="document.getElementById('modal-politicas').classList.remove('show')">Entendido ✓</button>
   </div>
 </div>
 
