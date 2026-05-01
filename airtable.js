@@ -5,9 +5,9 @@
 const REWARDS = [
   { puntos: 500,  nombre: 'Coca Cola gratis',                   emoji: '🥤' },
   { puntos: 1500, nombre: 'Orden de muslitos gratis',            emoji: '🍗' },
-  { puntos: 3000, nombre: 'Orden gratis a elegir',               emoji: '🌶️' },
+  { puntos: 3000, nombre: 'Boneless, Chicken tenders o Tenders especiales',               emoji: '🌶️' },
   { puntos: 4000, nombre: 'Kilo de alitas gratis',               emoji: '🍖' },
-  { puntos: 6600, nombre: 'Kilo alitas + orden a elegir + 3 Cocas', emoji: '🏆' },
+  { puntos: 6600, nombre: 'Kilo alitas + (Boneless, Chicken tenders o Tenders especiales) + 3 Cocas', emoji: '🏆' },
 ];
 
 const SUCURSAL_BARRIO = 'Barrio Antiguo';
