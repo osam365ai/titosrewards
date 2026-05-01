@@ -443,7 +443,7 @@
     </div>
 
     <!-- CANJES DISPONIBLES -->
-    <div class="section-title">🎁 Mis Canjes Disponibles</div>
+    <div class="section-title">🎁 Mis Recompensas</div>
     <div id="rewards-container" class="rewards-grid"></div>
 
     <!-- RANKING BARRIO -->
@@ -694,13 +694,7 @@
   function renderRewards(puntos) {
     const container = document.getElementById('rewards-container');
     if (!container) return;
-    const disponibles = recompensasDisponibles(puntos);
     const todos = REWARDS;
-
-    if (disponibles.length === 0) {
-      container.innerHTML = `<div class="empty-state">Acumula <strong style="color:var(--primary)">500 puntos</strong> para tu primer canje 🎁</div>`;
-      return;
-    }
 
     container.innerHTML = todos.map(r => {
       const disponible = puntos >= r.puntos;
